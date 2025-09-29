@@ -2,6 +2,9 @@
 
 **JitsiMeet-AutoStart** is a lightweight, single-page utility for **unattended systems** that need to automatically join a Jitsi meeting with the camera enabled. Perfect for kiosks, monitoring setups, or any scenario where a system should automatically connect and display video without user interaction.
 
+<img width="1110" height="748" alt="image" src="https://github.com/user-attachments/assets/5598aa55-442e-4198-ac44-99bebac4658a" />
+
+
 ## Features
 
 1. **Automatic Meeting Join**
