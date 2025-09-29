@@ -15,40 +15,121 @@
       --panel2: #0f1526;
       --border: #24304a;
     }
-    html, body { height: 100%; margin: 0; }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
     body {
       background: var(--bg);
       color: var(--fg);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial;
-      display: flex; flex-direction: column;
+      display: flex;
+      flex-direction: column;
     }
+
     #topbar {
       background: linear-gradient(180deg, var(--panel), var(--panel2));
       border-bottom: 1px solid var(--border);
-      padding: 10px 14px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
-      position: sticky; top: 0; z-index: 10;
+      padding: 10px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    .kv { display: flex; gap: 6px; align-items: center; }
-    .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
-    .value { font-weight: 600; }
+
+    .kv {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      display: flex;
+      flex-direction: column;
+      /* Arranges items vertically */
+      align-items: flex-start;
+    }
+
+    .value {
+      font-weight: 600;
+    }
+
     #statusDot {
-      width:10px;height:10px;border-radius:50%; background:#999; display:inline-block; vertical-align:middle; margin-right:6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #999;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 6px;
     }
-    #controls { margin-left:auto; display:flex; gap:8px; align-items:center; }
-    button, input {
-      background: #0c1222; color: var(--fg); border: 1px solid var(--border);
-      padding: 6px 10px; border-radius: 8px; font-size: 14px;
+
+    #controls {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      align-items: center;
     }
-    button { cursor: pointer; }
-    button.primary { background: #16305a; border-color: #20457f; }
-    button:disabled { opacity: .6; cursor: not-allowed; }
+
+    button,
+    input[type="text"],
+    input[type="url"] {
+      background: #0c1222;
+      color: var(--fg);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: #16305a;
+      border-color: #20457f;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
     #editPanel {
-      display:none; width:100%; gap:8px; align-items:center; flex-wrap:wrap;
+      display: none;
+      width: 100%;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
     }
-    #editPanel input { min-width: 280px; }
-    #test { height: calc(100vh - 60px); width: 100%; }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+
+    #editPanel input {
+      min-width: 280px;
+    }
+
+    #test {
+      height: calc(100vh - 60px);
+      width: 100%;
+    }
+
+    label.checkbox {
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -68,20 +149,27 @@
       <span class="label">RoomID</span>
       <span class="value" id="roomDisplay">—</span>
     </div>
+    <div class="kv">
+      <span class="label">Offline Reload</span>
+      <span class="value" id="reloadDisplay">—</span>
+    </div>
     <div id="controls">
-      <button id="editBtn" title="Edit Server/Room">Edit</button>
+      <button id="editBtn">Edit</button>
       <button id="saveBtn" class="primary" style="display:none">Save & Join</button>
-      <button id="cancelBtn" style="display:none">Cancel</button>
-      <button id="rejoinBtn" title="Re-initialize meeting">Rejoin</button>
+      <button id="rejoinBtn">Rejoin</button>
     </div>
     <div id="editPanel">
       <label>
-        <span class="label">Server URL</span><br />
-        <input id="serverInput" type="url" placeholder="https://usmeet.xttech.top" />
+        <span class="label">Server URL</span>
+        <input id="serverInput" type="url" placeholder="https://meet.jit.si" />
       </label>
       <label>
-        <span class="label">RoomID</span><br />
+        <span class="label">RoomID</span>
         <input id="roomInput" type="text" placeholder="" />
+      </label>
+      <label>
+        <span class="label">Offline Reload</span>
+        <input type="checkbox" id="offlineReloadChk" />
       </label>
     </div>
   </div>
@@ -94,47 +182,47 @@
     const STORAGE_KEYS = {
       server: 'jitsiServerURL',
       room: 'jitsiRoomID',
-    };
-    const DEFAULTS = {
-      server: 'https://meet.jit.si',
-      room:  crypto.randomUUID()
+      offlineReload: 'jitsiOfflineReload'
     };
 
     function getStoredConfig() {
-      const server = localStorage.getItem(STORAGE_KEYS.server) || DEFAULTS.server;
-      const room   = localStorage.getItem(STORAGE_KEYS.room)   || DEFAULTS.room;
-      return { server, room };
+      const server = localStorage.getItem(STORAGE_KEYS.server) || 'https://meet.jit.si';
+      const room = localStorage.getItem(STORAGE_KEYS.room) || crypto.randomUUID();
+      const offlineReload = localStorage.getItem(STORAGE_KEYS.offlineReload) || 'false';
+      return { server, room, offlineReload: offlineReload === 'true' };
     }
-    function setStoredConfig({ server, room }) {
-      if (server) localStorage.setItem(STORAGE_KEYS.server, server);
-      if (room)   localStorage.setItem(STORAGE_KEYS.room, room);
+    function setStoredConfig({ server, room, offlineReload }) {
+      if (server !== undefined) localStorage.setItem(STORAGE_KEYS.server, server);
+      if (room !== undefined) localStorage.setItem(STORAGE_KEYS.room, room);
+      if (offlineReload !== undefined) localStorage.setItem(STORAGE_KEYS.offlineReload, offlineReload);
     }
 
-    // ------- DOM refs -------
     const serverDisplay = document.getElementById('serverDisplay');
-    const roomDisplay   = document.getElementById('roomDisplay');
-    const statusDot     = document.getElementById('statusDot');
-    const statusText    = document.getElementById('statusText');
-    const editBtn       = document.getElementById('editBtn');
-    const saveBtn       = document.getElementById('saveBtn');
-    const cancelBtn     = document.getElementById('cancelBtn');
-    const editPanel     = document.getElementById('editPanel');
-    const serverInput   = document.getElementById('serverInput');
-    const roomInput     = document.getElementById('roomInput');
-    const rejoinBtn     = document.getElementById('rejoinBtn');
+    const roomDisplay = document.getElementById('roomDisplay');
+    const reloadDisplay = document.getElementById('reloadDisplay');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const editBtn = document.getElementById('editBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const editPanel = document.getElementById('editPanel');
+    const serverInput = document.getElementById('serverInput');
+    const roomInput = document.getElementById('roomInput');
+    const rejoinBtn = document.getElementById('rejoinBtn');
+    const offlineReloadChk = document.getElementById('offlineReloadChk');
 
-    // ------- UI state -------
-    function showConfig({ server, room }) {
+    function showConfig({ server, room, offlineReload }) {
       serverDisplay.textContent = server;
-      roomDisplay.textContent   = room;
+      roomDisplay.textContent = room;
+      reloadDisplay.textContent = offlineReload;
       serverInput.value = server;
-      roomInput.value   = room;
+      roomInput.value = room;
+      offlineReloadChk.checked = offlineReload;
     }
     function toggleEdit(on) {
       editPanel.style.display = on ? 'flex' : 'none';
-      saveBtn.style.display   = on ? '' : 'none';
-      cancelBtn.style.display = on ? '' : 'none';
-      editBtn.style.display   = on ? 'none' : '';
+      saveBtn.style.display = on ? '' : 'none';
+      editBtn.style.display = on ? 'none' : '';
+      rejoinBtn.style.display = on ? 'none' : '';
     }
 
     // ------- Reachability + script loader -------
@@ -166,21 +254,31 @@
       return typeof window.JitsiMeetExternalAPI !== "undefined";
     }
     function setStatus(ok) {
-      statusDot.style.background = ok ? '#22c55e' : '#f43f5e';
-      statusText.textContent = ok ? 'Online' : 'Offline';
+      if (ok == null) {
+        statusDot.style.background = '#c4c4c4';
+        statusText.textContent = '';
+
+      } else {
+        statusDot.style.background = ok ? '#22c55e' : '#f43f5e';
+        statusText.textContent = ok ? 'Online' : 'Offline';
+      }
+
     }
 
     let api = null;           // Jitsi API instance
-    let reloadTimer = null;   // periodic reload when unreachable
-    let probeTimer  = null;   // periodic reachability probe
+    let probeTimer = null;   // periodic reload when unreachable
+    let ensureVideoTimer = null; //periodic enable video timer
 
     function clearApi() {
       if (api && typeof api.dispose === 'function') {
-        try { api.dispose(); } catch {}
+        try { api.dispose(); } catch { }
       }
       api = null;
       const container = document.getElementById('test');
       container.innerHTML = ''; // remove old iframe if any
+
+      clearInterval(probeTimer);
+      clearInterval(ensureVideoTimer);
     }
 
     function loadExternalScript(baseUrl) {
@@ -191,9 +289,8 @@
         const script = document.createElement('script');
         script.src = `${baseUrl}/external_api.js`;
         script.async = true;
-
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error('Failed to load external_api.js'));
+        script.onload = resolve;
+        script.onerror = reject;
         document.head.appendChild(script);
       });
     }
@@ -206,43 +303,9 @@
       }
     }
 
-    async function initMeeting() {
-      const { server, room } = getStoredConfig();
-      showConfig({ server, room });
-
-      const base = normalizeBase(server);
-
-      // Reachability probe + status
-      const reachable = await checkReachability(base);
-      setStatus(reachable);
-
-      // Start a periodic probe to update status light
-      if (probeTimer) clearInterval(probeTimer);
-      probeTimer = setInterval(async () => {
-        const ok = await checkReachability(base);
-        setStatus(ok);
-        // if it becomes reachable and no API yet, try to (re)join
-        if (ok && !api) {
-          try {
-            await startOrRejoin();
-          } catch {}
-        }
-      }, 10000);
-
-      // If unreachable, schedule hard reloads (as requested)
-      if (!reachable) {
-        if (reloadTimer) clearInterval(reloadTimer);
-        reloadTimer = setInterval(() => location.reload(), 10000);
-        return;
-      } else {
-        if (reloadTimer) { clearInterval(reloadTimer); reloadTimer = null; }
-      }
-
-      await startOrRejoin();
-    }
-
     async function startOrRejoin() {
-      const { server, room } = getStoredConfig();
+      const { server, room, offlineReload } = getStoredConfig();
+      showConfig({ server, room, offlineReload });
       const base = normalizeBase(server);
 
       // Load Jitsi API if necessary
@@ -251,9 +314,8 @@
       }
 
       clearApi();
-
       const domain = getDomainFromBase(base);
-      const options = {
+      api = new JitsiMeetExternalAPI(domain, {
         roomName: room,
         parentNode: document.querySelector('#test'),
         configOverwrite: {
@@ -262,10 +324,16 @@
           startWithAudioMuted: true,
           startWithVideoMuted: false,
           disableDeepLinking: false
+        },
+        onload: function() {
+          // Rejoin conference if it is closed
+          api.addListener('readyToClose', ({}) => {
+            startOrRejoin();
+          });
         }
-      };
+      });
 
-      api = new JitsiMeetExternalAPI(domain, options);
+      //Hide room name
       api.executeCommand('subject', ' ');
 
       // Ensure camera is on (as in your original)
@@ -273,35 +341,47 @@
         if (!api) return;
         api.isVideoMuted().then(muted => {
           if (muted) api.executeCommand('toggleVideo');
-        }).catch(() => {});
+        }).catch(() => { });
       };
-      // first try shortly after join, then every 3s for a bit
-      setTimeout(ensureVideo, 1200);
-      const vInt = setInterval(ensureVideo, 3000);
-      // clear interval when conference is ready/left to avoid forever polling
-      api.addListener('videoConferenceJoined', () => setTimeout(() => clearInterval(vInt), 8000));
-      api.addListener('readyToClose', () => clearInterval(vInt));
+
+      // // first try shortly after join, then every 3s for a bit
+      if (ensureVideoTimer) clearInterval(ensureVideoTimer);
+      ensureVideoTimer = setInterval(ensureVideo, 3000);
+
+      if (probeTimer) clearInterval(probeTimer);
+      if (offlineReload) {
+        const ok = await checkReachability(base);
+        setStatus(ok);
+        probeTimer = setInterval(async () => {
+          const ok = await checkReachability(base);
+          setStatus(ok);
+          // if it becomes reachable and no API yet, try to (re)join
+          if (!ok || !checkJitsiAPI()) {
+            try {
+              await startOrRejoin();
+            } catch { }
+          }
+        }, 10000);
+      } else {
+        setStatus(null);
+        clearInterval(probeTimer);
+      }
     }
 
     // ------- Event wiring -------
-    editBtn.addEventListener('click', () => toggleEdit(true));
-    cancelBtn.addEventListener('click', () => {
-      const cfg = getStoredConfig();
-      showConfig(cfg);
-      toggleEdit(false);
+    editBtn.addEventListener('click', () => {
+      toggleEdit(true);
+      clearApi();
     });
     saveBtn.addEventListener('click', async () => {
-      const server = serverInput.value.trim();
-      const room   = roomInput.value.trim();
-      if (!server || !room) return;
-
+      const server = serverInput.value.trim(), room = roomInput.value.trim();
       setStoredConfig({ server, room });
-      showConfig({ server, room });
       toggleEdit(false);
-      await initMeeting(); // re-init with new settings
+      await startOrRejoin();
     });
-    rejoinBtn.addEventListener('click', async () => {
-      await initMeeting();
+    rejoinBtn.addEventListener('click', async () => await startOrRejoin());
+    offlineReloadChk.addEventListener('change', async (e) => {
+      setStoredConfig({ offlineReload: e.target.checked });
     });
 
     // ------- Boot -------
@@ -310,21 +390,10 @@
       const existing = getStoredConfig();
       setStoredConfig(existing);
       showConfig(existing);
-      initMeeting();
+      startOrRejoin();
     })();
 
-    // Safety: if API disappears or site goes down, hard reload every 10s (spec)
-    setInterval(async () => {
-      const { server } = getStoredConfig();
-      const base = normalizeBase(server);
-      const reachable = await checkReachability(base);
-      const hasAPI = checkJitsiAPI();
-      if (!reachable || !hasAPI) {
-        console.warn("Server unreachable or API missing — reloading in 1s");
-        setTimeout(() => location.reload(), 1000);
-      }
-    }, 10000);
   </script>
 </body>
-</html>
 
+</html>
