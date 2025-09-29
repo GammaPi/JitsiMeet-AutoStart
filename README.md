@@ -10,7 +10,7 @@
 1. **Automatic Meeting Join**
    * Immediately joins the configured Jitsi room.
    * Microphone starts muted.
-   * Camera starts enabled.
+   * Video will be enabled if a camera exists and there are more than one participants. (Camera indicator light becomes an indicator of someone is in the meeting room,)
    * Hides room name.
 
 2. **Persistent Configuration**
