@@ -340,9 +340,16 @@
       // Ensure camera is on (as in your original)
       const ensureVideo = () => {
         if (!api) return;
-        api.isVideoMuted().then(muted => {
-          if (muted) api.executeCommand('toggleVideo');
-        }).catch(() => { });
+        api.isVideoAvailable().then(available => {
+          api.isVideoMuted().then(muted => {
+            if (available && muted && api.getNumberOfParticipants()>1){
+              api.executeCommand('toggleVideo');
+            }else if (available && !muted && api.getNumberOfParticipants()==1){
+              api.executeCommand('toggleVideo');
+            }
+          }).catch(() => { });
+        });
+        
       };
 
       // // first try shortly after join, then every 3s for a bit
