@@ -8,9 +8,10 @@
 ## Features
 
 1. **Automatic Meeting Join**
-   Immediately joins the configured Jitsi room.
-   * Microphone starts muted
-   * Camera starts enabled
+   * Immediately joins the configured Jitsi room.
+   * Microphone starts muted.
+   * Camera starts enabled.
+   * Hides room name.
 
 2. **Persistent Configuration**
    The browser remembers the **server URL** and **room ID** using persistent storage. Once set, the system will rejoin the same meeting automatically after reboots or reloads.
