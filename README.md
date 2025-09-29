@@ -30,13 +30,15 @@
 
 ## Server Reachability Check
 
-The script determines if your Jitsi server is online by checking:
+When "Offline Reload" is checked the script automatically reloads the webpage if your Jitsi server is offline.
+
+To achieve this, the script will ping the following path:
 
 ```
 https://<server_url>/ping
 ```
 
-Since many Jitsi instances block CORS by default, you must configure a `/ping` endpoint that is publicly accessible.
+Since many Jitsi instances block CORS by default, you **must** configure a `/ping` endpoint that is publicly accessible and disable CORS for this path.
 
 ### Example Nginx Configuration
 
