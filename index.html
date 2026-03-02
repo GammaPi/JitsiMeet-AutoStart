@@ -303,7 +303,8 @@
         return new URL(DEFAULTS.server).host;
       }
     }
-
+    let prevOnlineStatus = true;
+    let onlineStatus = false;
     async function startOrRejoin() {
       const { server, room, offlineReload } = getStoredConfig();
       showConfig({ server, room, offlineReload });
@@ -357,18 +358,23 @@
       ensureVideoTimer = setInterval(ensureVideo, 3000);
 
       if (probeTimer) clearInterval(probeTimer);
+
       if (offlineReload) {
-        const ok = await checkReachability(base);
-        setStatus(ok);
+        onlineStatus = await checkReachability(base);
+        setStatus(onlineStatus);
         probeTimer = setInterval(async () => {
-          const ok = await checkReachability(base);
-          setStatus(ok);
-          // if it becomes reachable and no API yet, try to (re)join
-          if (!ok || !checkJitsiAPI()) {
-            try {
+        try {
+          console.log("Check uptime");
+          onlineStatus = await checkReachability(base);
+          setStatus(onlineStatus);
+        } catch { }
+        try {
+           if(!prevOnlineStatus && onlineStatus){
+              console.log("Rejoining");
               await startOrRejoin();
-            } catch { }
-          }
+           }
+        } catch {}
+        prevOnlineStatus = onlineStatus;
         }, 10000);
       } else {
         setStatus(null);
