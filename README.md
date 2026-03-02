@@ -73,4 +73,4 @@ This lightweight endpoint allows the script to detect server availability and ha
 
 ## Credit
 
-I (proudly?!) generated this project by instructing ChatGPT.
+I (proudly?!) generated this project by instructing ChatGPT and performed code review and some modification.
