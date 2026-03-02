@@ -327,9 +327,9 @@
           startWithVideoMuted: false,
           disableDeepLinking: false
         },
-        onload: function() {
+        onload: function () {
           // Rejoin conference if it is closed
-          api.addListener('readyToClose', ({}) => {
+          api.addListener('readyToClose', ({ }) => {
             startOrRejoin();
           });
         }
@@ -343,14 +343,14 @@
         if (!api) return;
         api.isVideoAvailable().then(available => {
           api.isVideoMuted().then(muted => {
-            if (available && muted && api.getNumberOfParticipants()>1){
+            if (available && muted && api.getNumberOfParticipants() > 1) {
               api.executeCommand('toggleVideo');
-            }else if (available && !muted && api.getNumberOfParticipants()==1){
+            } else if (available && !muted && api.getNumberOfParticipants() == 1) {
               api.executeCommand('toggleVideo');
             }
           }).catch(() => { });
         });
-        
+
       };
 
       // // first try shortly after join, then every 3s for a bit
@@ -363,18 +363,18 @@
         onlineStatus = await checkReachability(base);
         setStatus(onlineStatus);
         probeTimer = setInterval(async () => {
-        try {
-          console.log("Check uptime");
-          onlineStatus = await checkReachability(base);
-          setStatus(onlineStatus);
-        } catch { }
-        try {
-           if(!prevOnlineStatus && onlineStatus){
+          try {
+            console.log("Check uptime");
+            onlineStatus = await checkReachability(base);
+            setStatus(onlineStatus);
+          } catch { }
+          try {
+            if (!prevOnlineStatus && onlineStatus) {
               console.log("Rejoining");
               await startOrRejoin();
-           }
-        } catch {}
-        prevOnlineStatus = onlineStatus;
+            }
+          } catch { }
+          prevOnlineStatus = onlineStatus;
         }, 10000);
       } else {
         setStatus(null);
